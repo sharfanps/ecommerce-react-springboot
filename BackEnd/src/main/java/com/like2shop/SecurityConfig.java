@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     // Password encoder
@@ -38,11 +40,21 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers("/").permitAll()
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+//                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/products/**").permitAll()
-//                        .requestMatchers("/seller/**").hasRole("SELLER")
-                        .anyRequest().permitAll()
+                        .requestMatchers("/api/products/getList").authenticated()
+                        .requestMatchers("/api/products/addProduct").authenticated()
+                        .anyRequest().denyAll()
+                )
+                .exceptionHandling(exception -> exception
+                        // 403 - authenticated user does not have permission
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json");
+                            response.getWriter().write(
+                                    "{\"error\":\"Access denied\"}"
+                            );
+                        })
                 )
                 .logout(logout -> logout
                         .logoutUrl("/api/auth/logout")

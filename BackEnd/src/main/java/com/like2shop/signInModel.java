@@ -20,5 +20,7 @@ public class signInModel {
         String email;
         @Column(name="password")
         String password;
+        @Column(name="role")
+        String role;
 }
 

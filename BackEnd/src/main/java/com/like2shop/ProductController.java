@@ -5,14 +5,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -38,6 +33,15 @@ public class ProductController {
                 return Page.empty();
             }
         }
+    @PreAuthorize("hasRole('SELLER')")
+    @PostMapping("/addProduct")
+    public Map<String,String> addProduct(@RequestBody ProductModel dto){
+            System.out.println("Reached add product Controller"+dto);
+        productRepository.save(dto);
+      return Map.of("message","Product added successfully");
+
+
+    }
 
 
 

@@ -1,4 +1,5 @@
 export default interface loginResp{
 error?: string;
-token?: string
+token?: string;
+role: string;
 }
