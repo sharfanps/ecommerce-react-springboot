@@ -36,13 +36,15 @@ const Navbar = () => {
         {isLoggedIn ? (
           <>
             <Link to="/productList" style={styles.link}>products</Link>
+            <Link to="/cartPage" style={styles.link}>myCart</Link>
+            <Link to="/addProduct" style={styles.link}>Add Products</Link>
             <button onClick={handleLogout} style={styles.button}>
               Logout
             </button>
           </>
         ) : (
           <>
-            <Link to="/" style={styles.link}>Login</Link>
+            <Link to="/login" style={styles.link}>Login</Link>
             <Link to="/Signup" style={styles.link}>Register</Link>
           </>
         )}

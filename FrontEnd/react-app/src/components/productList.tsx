@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./product.css";
-import { getList } from "../services/api_service";
+import { addCartItem, getList } from "../services/api_service";
 import { useNavigate } from "react-router-dom";
 
 export default function productList(){
@@ -36,17 +36,31 @@ const [products,setProducts]=useState<product[]>([]);
  const fetchList=async (page: number | undefined, sortOption: string)=> {
     try{
     const res=await getList(page, sortOption);
-   console.log("res.. "+JSON.stringify(res));
-    if(!res.error){
-        setProducts(res.content);
+    console.log("res.. "+JSON.stringify(res));
+    
+        setProducts(res.content || []);
         setPage(res.number);
         setTotalPages(res.totalPages);
         console.log("List :",res);
+       
+    
+}catch(error:any)
+{
+if (error.response?.status === 401) {
+        localStorage.removeItem("token");
+        alert("Session expired. Please login again.");
+        navigate("/");
     }
-     }catch(Error){
-        console.error("List Error");
-    };
+    else if (error.response?.status === 403) {
+        alert("Access denied.");
+    }
+    else {
+        console.error("Error:", error);
+        alert("Something went wrong.");
+    }
 }
+ 
+ }
   useEffect(() => {
     fetchList(page, sortOption);
   }, [page, sortOption]);
@@ -58,6 +72,11 @@ const handleNext = () => {
   const handlePrev = () => {
     if (page > 0) setPage(page - 1);
   };
+
+  const addCartElement=async(productId:number): Promise<void>=>{
+  const res= await addCartItem(productId);
+
+  }
 
     return(
     <div className="product-page">
@@ -85,7 +104,7 @@ const handleNext = () => {
             {/* <img src={product.image} alt={product.name} /> */}
             <h3>{product.name}</h3>
             <p>${product.price}</p>
-            <button>Add to Cart</button>
+            <button onClick={() => addCartElement(product.id)} >Add to Cart</button>
           </div>
         ))}
       </div>

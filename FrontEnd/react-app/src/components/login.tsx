@@ -63,6 +63,7 @@ export default function Login() {
            {
             alert("Login success"); 
             localStorage.setItem("token", result.token);
+            localStorage.setItem("role", result.role);
              navigate("/productList");
            return ;
            }
